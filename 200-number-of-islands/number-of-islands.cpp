@@ -1,14 +1,20 @@
+#include <vector>
+#include <queue>
+using namespace std;
+
 class Solution {
 public:
     int numIslands(vector<vector<char>>& grid) {
+        if (grid.empty()) return 0;
+
         int count = 0;
         int row = grid.size();
         int col = grid[0].size();
 
-        for(int i = 0; i < row; i++){
-            for(int j = 0; j < col; j++){
-                if(grid[i][j] == '1'){
-                    breathfirst(grid, i ,j);
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (grid[i][j] == '1') {
+                    bfs(i, j, grid);
                     count++;
                 }
             }
@@ -17,30 +23,28 @@ public:
         return count;
     }
 
-    private:
-        void breathfirst(vector<vector<char>>& grid, int i, int j){
-            queue<pair<int, int>> que;
-            int row = grid.size();
-            int col = grid[0].size();
+    void bfs(int i, int j, vector<vector<char>>& grid) {
+        int row = grid.size();
+        int col = grid[0].size();
+        queue<pair<int, int>> que;
+        que.push({i, j});
+        grid[i][j] = '0'; // mark as visited
 
-            que.push(make_pair(i,j));
+        vector<pair<int, int>> directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
 
-            while(!que.empty()){
-                auto [i, j] = que.front();
-                que.pop();
+        while (!que.empty()) {
+            auto [x, y] = que.front();
+            que.pop();
 
-                if(i < 0 || j < 0 || i >= row || j >= col || grid[i][j] == '0'){
-                    continue;
+            for (auto [dx, dy] : directions) {
+                int nx = x + dx;
+                int ny = y + dy;
+
+                if (nx >= 0 && ny >= 0 && nx < row && ny < col && grid[nx][ny] == '1') {
+                    grid[nx][ny] = '0'; // mark as visited
+                    que.push({nx, ny});
                 }
-
-                //mark the place visited
-                grid[i][j] = '0';
-
-                breathfirst(grid, i + 1, j);
-                breathfirst(grid, i - 1, j);
-                breathfirst(grid, i, j + 1);
-                breathfirst(grid, i, j - 1);
             }
         }
-
+    }
 };
